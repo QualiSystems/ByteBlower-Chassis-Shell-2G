@@ -1,0 +1,6 @@
+<Driver Description="ByteBlower Chassis 2G Driver" MainClass="driver.ByteBlowerChassis2GDriver" Name="ByteBlower Chassis 2G Driver" Version="2.0.0">
+    <Layout>
+        <Command Description="Import device into Cloudshell" DisplayName="Autoload" Name="get_inventory" Tags="">
+        </Command>
+    </Layout>
+</Driver>
