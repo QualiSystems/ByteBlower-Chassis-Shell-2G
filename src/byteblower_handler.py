@@ -89,23 +89,23 @@ class ByteBlowerHandler(object):
         self.attributes.append(AutoLoadAttribute(relative_address=relative_address,
                                                  attribute_name=model + '.Version',
                                                  attribute_value=''))
-        if physical_interface.ByteBlowerInterfaceCountGet() > 1:
-            for interface in physical_interface.ByteBlowerInterfaceGet():
-                self._get_port_bb(relative_address, interface)
+        for interface in physical_interface.ByteBlowerInterfaceGet():
+            self._get_port_bb(relative_address, interface)
 
     def _get_port_bb(self, relative_address, interface):
         """ Get port resource and attributes. """
 
-        relative_address = relative_address + '/P' + str(interface.PortIdGet())
+        index = str(interface.PortIdGet()) if interface.PortIdGet() else '1'
+        relative_address = relative_address + '/P' + index
         resource = AutoLoadResource(model='ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort',
-                                    name='Port' + str(interface.PortIdGet()),
+                                    name='Port' + index,
                                     relative_address=relative_address)
         self.resources.append(resource)
 
     def _get_ep_bb(self, relative_address, device, index):
         """ Get endpoint resource and attributes. """
 
-        relative_address = relative_address + '/' + str(index)
+        relative_address = relative_address + '/P' + str(index + 1)
         model = 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint'
         resource = AutoLoadResource(model=model,
                                     name=device.DeviceInfoGet().GivenNameGet(),
