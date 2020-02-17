@@ -1,118 +1,80 @@
 
-from os import path
-
-from cloudshell.shell.core.driver_context import AutoLoadDetails, AutoLoadResource, AutoLoadAttribute
+from cloudshell.traffic.tg import TgChassisHandler
 
 from byteblower.byteblowerll import byteblower
 
+from byteblower_data_model import (ByteBlower_Chassis_Shell_2G, GenericTrafficGeneratorModule,
+                                   GenericTrafficGeneratorPort, ByteBlowerEndPoint)
 
-class ByteBlowerHandler(object):
+
+class ByteBlowerHandler(TgChassisHandler):
 
     def initialize(self, context, logger):
         """
-        :type context: cloudshell.shell.core.driver_context.InitCommandContext
+        :param InitCommandContext context:
+        """
+        resource = ByteBlower_Chassis_Shell_2G.create_from_context(context)
+        super(self.__class__, self).initialize(resource, logger)
+
+    def load_inventory(self, context):
+        """
+        :param InitCommandContext context:
         """
 
-        self.logger = logger
-
-        address = context.resource.address
-        server_address = context.resource.attributes['ByteBlower Chassis Shell 2G.Controller Address']
+        server_address = context.resource.address
         meetingpoint_address = server_address
 
         bb = byteblower.ByteBlower.InstanceGet()
         self.server = bb.ServerAdd(server_address)
         self.meetingpoint = bb.MeetingPointAdd(meetingpoint_address)
 
-    def get_inventory(self, context):
-        """ Return device structure with all standard attributes
+        self._load_chassis()
+        return self.resource.create_autoload_details()
 
-        :type context: cloudshell.shell.core.driver_context.AutoLoadCommandContext
-        :rtype: cloudshell.shell.core.driver_context.AutoLoadDetails
-        """
-
-        self.resources = []
-        self.attributes = []
-        self._get_chassis_bb()
-        details = AutoLoadDetails(self.resources, self.attributes)
-        return details
-
-    def _get_chassis_bb(self):
-        """ Get chassis resource and attributes. """
+    def _load_chassis(self):
+        """ Load chassis resource and attributes. """
 
         service_info = self.server.ServiceInfoGet()
 
-        self.attributes.append(AutoLoadAttribute(relative_address='',
-                                                 attribute_name='CS_TrafficGeneratorChassis.Model Name',
-                                                 attribute_value=service_info.SeriesGet()))
-        self.attributes.append(AutoLoadAttribute(relative_address='',
-                                                 attribute_name='',
-                                                 attribute_value=service_info.MachineIDGet()))
-        self.attributes.append(AutoLoadAttribute(relative_address='',
-                                                 attribute_name='ByteBlower Chassis Shell 2G.Server Description',
-                                                 attribute_value=''))
-        self.attributes.append(AutoLoadAttribute(relative_address='',
-                                                 attribute_name='CS_TrafficGeneratorChassis.Vendor',
-                                                 attribute_value='Excentis'))
-        self.attributes.append(AutoLoadAttribute(relative_address='',
-                                                 attribute_name='CS_TrafficGeneratorChassis.Version',
-                                                 attribute_value=service_info.VersionGet()))
+        self.resource.vendor = 'Excentis'
+        self.resource.model_name = service_info.SeriesGet()
+        self.resource.version = service_info.VersionGet()
 
         physical_interfaces = self.server.PhysicalInterfacesGet()
         for physical_interface in physical_interfaces:
-            self._get_module_bb(physical_interface)
+            self._load_module_bb(physical_interface)
 
-        relative_address = 'M' + str(len(physical_interfaces) + 1)
-        model = 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule'
-        resource = AutoLoadResource(model=model,
-                                    name='Module' + str(len(physical_interfaces) + 1),
-                                    relative_address=relative_address)
-        self.resources.append(resource)
+        card_id = len(physical_interfaces) + 1
+        gen_module = GenericTrafficGeneratorModule('Module{}'.format(card_id))
+        self.resource.add_sub_resource('M{}'.format(card_id), gen_module)
 
         for index, device in enumerate(self.meetingpoint.DeviceListGet()):
-            self._get_ep_bb(relative_address, device, index)
+            self._load_ep_bb(gen_module, device, index)
 
-    def _get_module_bb(self, physical_interface):
-        """ Get module resource and attributes. """
+    def _load_module_bb(self, physical_interface):
+        """ Load module resource and attributes. """
 
-        relative_address = 'M' + str(physical_interface.IdGet() + 1)
-        model = 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule'
-        resource = AutoLoadResource(model=model,
-                                    name='Module' + str(physical_interface.IdGet() + 1),
-                                    relative_address=relative_address)
-        self.resources.append(resource)
-        self.attributes.append(AutoLoadAttribute(relative_address=relative_address,
-                                                 attribute_name='CS_TrafficGeneratorModule.Model Name',
-                                                 attribute_value=physical_interface.NameGet()))
-        self.attributes.append(AutoLoadAttribute(relative_address=relative_address,
-                                                 attribute_name=model + '.Serial Number',
-                                                 attribute_value=''))
-        self.attributes.append(AutoLoadAttribute(relative_address=relative_address,
-                                                 attribute_name=model + '.Version',
-                                                 attribute_value=''))
+        card_id = physical_interface.IdGet() + 1
+        gen_module = GenericTrafficGeneratorModule('Module{}'.format(card_id))
+        self.resource.add_sub_resource('M{}'.format(card_id), gen_module)
+
+        gen_module.model_name = physical_interface.NameGet()
         for interface in physical_interface.ByteBlowerInterfaceGet():
-            self._get_port_bb(relative_address, interface)
+            self._load_port_bb(gen_module, interface)
 
-    def _get_port_bb(self, relative_address, interface):
+    def _load_port_bb(self, gen_module, interface):
         """ Get port resource and attributes. """
 
-        index = str(interface.PortIdGet()) if interface.PortIdGet() else '1'
-        relative_address = relative_address + '/P' + index
-        resource = AutoLoadResource(model='ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort',
-                                    name='Port' + index,
-                                    relative_address=relative_address)
-        self.resources.append(resource)
+        port_id = str(interface.PortIdGet()) if interface.PortIdGet() else '1'
+        gen_port = GenericTrafficGeneratorPort('Port{}'.format(port_id))
+        gen_module.add_sub_resource('P{}'.format(port_id), gen_port)
 
-    def _get_ep_bb(self, relative_address, device, index):
+    def _load_ep_bb(self, gen_module, device, index):
         """ Get endpoint resource and attributes. """
 
-        relative_address = relative_address + '/P' + str(index + 1)
-        model = 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint'
-        resource = AutoLoadResource(model=model,
-                                    name=device.DeviceInfoGet().GivenNameGet(),
-                                    relative_address=relative_address)
-        self.resources.append(resource)
+        port_id = str(index + 1)
+        endpoint = ByteBlowerEndPoint('Endpoint{}'.format(port_id))
+        gen_module.add_sub_resource('EP{}'.format(port_id), endpoint)
 
         network_info = device.DeviceInfoGet().NetworkInfoGet()
-        self.attributes.append(AutoLoadAttribute(relative_address=relative_address,
-                                                 attribute_name=model + '.Address',
-                                                 attribute_value=network_info.IPv4Get()))
+        endpoint.address = network_info.IPv4Get()
