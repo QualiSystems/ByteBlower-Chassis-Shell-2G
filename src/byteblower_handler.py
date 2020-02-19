@@ -65,16 +65,14 @@ class ByteBlowerHandler(TgChassisHandler):
     def _load_port_bb(self, gen_module, interface):
         """ Get port resource and attributes. """
 
-        port_id = str(interface.PortIdGet()) if interface.PortIdGet() else '1'
-        gen_port = GenericTrafficGeneratorPort('Port{}'.format(port_id))
-        gen_module.add_sub_resource('P{}'.format(port_id), gen_port)
+        gen_port = GenericTrafficGeneratorPort(interface.NameGet())
+        gen_module.add_sub_resource('P{}'.format(interface.PortIdGet()), gen_port)
 
     def _load_ep_bb(self, gen_module, device, index):
         """ Get endpoint resource and attributes. """
 
-        port_id = str(index + 1)
-        endpoint = ByteBlowerEndPoint('Endpoint{}'.format(port_id))
-        gen_module.add_sub_resource('EP{}'.format(port_id), endpoint)
+        endpoint = ByteBlowerEndPoint(device.DeviceInfoGet().GivenNameGet())
+        gen_module.add_sub_resource('EP{}'.format(index + 1), endpoint)
 
         network_info = device.DeviceInfoGet().NetworkInfoGet()
         endpoint.address = network_info.IPv4Get()
