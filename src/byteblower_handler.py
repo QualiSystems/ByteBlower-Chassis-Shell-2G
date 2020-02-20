@@ -76,3 +76,4 @@ class ByteBlowerHandler(TgChassisHandler):
 
         network_info = device.DeviceInfoGet().NetworkInfoGet()
         endpoint.address = network_info.IPv4Get()
+        endpoint.identifier = device.DeviceIdentifierGet()

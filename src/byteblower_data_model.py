@@ -907,6 +907,21 @@ class ByteBlowerEndPoint(object):
         self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address'] = value
 
     @property
+    def identifier(self):
+        """
+        :rtype: str
+        """
+        return self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier'] if 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier' in self.attributes else None
+
+    @identifier.setter
+    def identifier(self, value):
+        """
+        The unique ID of the endpoint.
+        :type value: str
+        """
+        self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier'] = value
+
+    @property
     def name(self):
         """
         :rtype: str
