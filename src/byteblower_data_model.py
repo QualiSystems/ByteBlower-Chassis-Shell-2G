@@ -922,6 +922,21 @@ class ByteBlowerEndPoint(object):
         self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier'] = value
 
     @property
+    def ssid(self):
+        """
+        :rtype: str
+        """
+        return self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID'] if 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID' in self.attributes else None
+
+    @ssid.setter
+    def ssid(self, value):
+        """
+        SSID that the endpoint should connect to. If kept emtpy - allocation will applied in the blue print.
+        :type value: str
+        """
+        self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID'] = value
+
+    @property
     def name(self):
         """
         :rtype: str

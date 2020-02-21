@@ -71,7 +71,11 @@ class ByteBlowerHandler(TgChassisHandler):
     def _load_ep_bb(self, gen_module, device, index):
         """ Get endpoint resource and attributes. """
 
-        endpoint = ByteBlowerEndPoint(device.DeviceInfoGet().GivenNameGet())
+        name = device.DeviceInfoGet().GivenNameGet()
+        if name in [r.name for r in gen_module.resources.values()]:
+            return
+        endpoint = ByteBlowerEndPoint(name)
+        # The same EP can appear twice in BB server (bug?)
         gen_module.add_sub_resource('EP{}'.format(index + 1), endpoint)
 
         network_info = device.DeviceInfoGet().NetworkInfoGet()
