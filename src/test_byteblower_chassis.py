@@ -1,70 +1,64 @@
-
 """
 Tests for ByteBlowerChassis2GDriver
 """
-
-import time
 import pytest
 
-from cloudshell.traffic.tg import BYTEBLOWER_CHASSIS_MODEL
-from shellfoundry.releasetools.test_helper import (create_session_from_deployment, create_init_command_context,
-                                                   create_autoload_resource)
+from cloudshell.api.cloudshell_api import CloudShellAPISession, ResourceInfo
+from cloudshell.shell.core.driver_context import AutoLoadCommandContext
+from cloudshell.traffic.tg import TGN_CHASSIS_FAMILY, BYTEBLOWER_CHASSIS_MODEL
+from shellfoundry_traffic.test_helpers import create_session_from_config, TestHelpers, print_inventory
 
 from src.byteblower_driver import ByteBlowerChassis2GDriver
 
 
 @pytest.fixture()
-def model():
-    yield BYTEBLOWER_CHASSIS_MODEL
+def server() -> str:
+    """ Yields server address. """
+    yield 'nl-srk03d-bb-st01.upclabs.com'
+
+
+@pytest.fixture(scope='session')
+def session() -> CloudShellAPISession:
+    """ Yields active session. """
+    yield create_session_from_config()
+
+
+@pytest.fixture(scope='session')
+def test_helpers(session: CloudShellAPISession) -> TestHelpers:
+    """ Yields initialized TestHelpers object. """
+    yield TestHelpers(session)
 
 
 @pytest.fixture()
-def dut():
-    yield '10.113.137.22'
-
-
-@pytest.fixture()
-def session():
-    yield create_session_from_deployment()
-
-
-@pytest.fixture()
-def context(session, model, dut):
-    attributes = {}
-    init_context = create_init_command_context(session, 'CS_TrafficGeneratorChassis', model, dut, attributes,
-                                               'Resource')
-    yield init_context
-
-
-@pytest.fixture()
-def driver(context):
+def driver(test_helpers: TestHelpers, server: str) -> ByteBlowerChassis2GDriver:
+    """ Yields initialized ByteBlower driver for driver testing. """
+    init_context = test_helpers.resource_init_command_context(TGN_CHASSIS_FAMILY, BYTEBLOWER_CHASSIS_MODEL, server)
     driver = ByteBlowerChassis2GDriver()
-    driver.initialize(context)
+    driver.initialize(init_context)
     print(driver.logger.handlers[0].baseFilename)
     yield driver
 
 
 @pytest.fixture()
-def resource(session, model, dut):
-    attributes = []
-    resource = create_autoload_resource(session, 'CS_TrafficGeneratorChassis', model, dut, 'test-byteblower',
-                                        attributes)
-    time.sleep(2)
+def autoload_context(test_helpers: TestHelpers, server: str) -> AutoLoadCommandContext:
+    """ Yields ByteBlower resource for shell autoload testing. """
+    yield test_helpers.autoload_command_context('CS_GenericResource', BYTEBLOWER_CHASSIS_MODEL, server)
+
+
+@pytest.fixture()
+def autoload_resource(session: CloudShellAPISession, test_helpers: TestHelpers, server: str) -> ResourceInfo:
+    """ Yields CPE resource for shell autoload testing. """
+    resource = test_helpers.create_autoload_resource(BYTEBLOWER_CHASSIS_MODEL, 'test-byteblower', server)
     yield resource
     session.DeleteResource(resource.Name)
 
 
-def test_autoload(driver, context):
-    inventory = driver.get_inventory(context)
-    print('\n')
-    for r in inventory.resources:
-        print('{}, {}, {}'.format(r.relative_address, r.model, r.name))
-    print('\n')
-    for a in inventory.attributes:
-        print('{}, {}, {}'.format(a.relative_address, a.attribute_name, a.attribute_value))
+def test_autoload(driver: ByteBlowerChassis2GDriver, autoload_context: AutoLoadCommandContext) -> None:
+    inventory = driver.get_inventory(autoload_context)
+    print_inventory(inventory)
 
 
-def test_autoload_session(session, resource):
-    session.AutoLoad(resource.Name)
-    session.GetResourceDetails(resource.Name)
+def test_autoload_session(session: CloudShellAPISession, autoload_resource: ResourceInfo) -> None:
+    session.AutoLoad(autoload_resource.Name)
+    session.GetResourceDetails(autoload_resource.Name)
     print('Done')

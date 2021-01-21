@@ -1,14 +1,23 @@
-description: 'TOSCA based ByteBlower chassis shell'
+description: TOSCA based ByteBlower chassis shell
+
+tosca_definitions_version: tosca_simple_yaml_1_0
 
 imports:
-- cloudshell_standard: cloudshell_traffic_generator_chassis_standard_1_0_3.yaml
+- cloudshell_standard: cloudshell_traffic_generator_chassis_standard_1_0_4.yaml
+
 metadata:
   template_author: Quali
   template_icon: shell-icon.png
   template_name: ByteBlower Chassis Shell 2G
-  template_version: 2.1.0
+  template_version: 3.0.1
 node_types:
   vendor.ByteBlower Chassis Shell 2G:
+    derived_from: cloudshell.nodes.TrafficGeneratorChassis
+    properties:
+      Meeting Point:
+        description: Meeting point IP address.
+        type: string
+        tags: [configuration, readonly_to_users]
     artifacts:
       driver:
         file: ByteBlowerChassisShell2GDriver.zip
@@ -19,5 +28,7 @@ node_types:
     capabilities:
       auto_discovery_capability:
         type: cloudshell.capabilities.AutoDiscovery
-    derived_from: cloudshell.nodes.TrafficGeneratorChassis
-tosca_definitions_version: tosca_simple_yaml_1_0
+        properties:
+          Meeting Point:
+            description: Meeting point IP address.
+            type: string

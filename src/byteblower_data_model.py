@@ -72,7 +72,7 @@ class LegacyUtils(object):
         return inspect.getmembers(sys.modules[__name__], inspect.isclass)
 
 
-class ByteBlower_Chassis_Shell_2G(object):
+class ByteBlowerChassisShell2G(object):
     def __init__(self, name):
         """
         
@@ -92,9 +92,9 @@ class ByteBlower_Chassis_Shell_2G(object):
         :param context: cloudshell.shell.core.driver_context.ResourceCommandContext
         :type context: cloudshell.shell.core.driver_context.ResourceCommandContext
         :return:
-        :rtype ByteBlower Chassis Shell 2G
+        :rtype ByteBlowerChassisShell2G
         """
-        result = ByteBlower_Chassis_Shell_2G(name=context.resource.name)
+        result = ByteBlowerChassisShell2G(name=context.resource.name)
         for attr in context.resource.attributes:
             result.attributes[attr] = context.resource.attributes[attr]
         return result
@@ -152,7 +152,22 @@ class ByteBlower_Chassis_Shell_2G(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'ByteBlower Chassis Shell 2G'
+        return 'ByteBlowerChassisShell2G'
+
+    @property
+    def meeting_point(self):
+        """
+        :rtype: str
+        """
+        return self.attributes['ByteBlower Chassis Shell 2G.Meeting Point'] if 'ByteBlower Chassis Shell 2G.Meeting Point' in self.attributes else None
+
+    @meeting_point.setter
+    def meeting_point(self, value):
+        """
+        Meeting point IP address.
+        :type value: str
+        """
+        self.attributes['ByteBlower Chassis Shell 2G.Meeting Point'] = value
 
     @property
     def user(self):
@@ -931,7 +946,7 @@ class ByteBlowerEndPoint(object):
     @ssid.setter
     def ssid(self, value):
         """
-        SSID that the endpoint should connect to. If kept emtpy - allocation will applied in the blue print.
+        The endpoints's SSID. If kept emtpy - allocation will applied in the blue print.
         :type value: str
         """
         self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID'] = value
