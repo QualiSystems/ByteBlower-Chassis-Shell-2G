@@ -1,5 +1,6 @@
-cloudshell-shell-core
-cloudshell-automation-api>=9.1,<9.2
-cloudshell-traffic>=2.0.1
+cloudshell-logging==1.0.3
+cloudshell-orch-core>=3.3.0.0,<3.4.0.0
+cloudshell-shell-core>=5.0.3,<6.0.0
+cloudshell-traffic>=3.2.3,<3.3
 
-pybyteblower==0.1
+pybyteblower==2.11.6
