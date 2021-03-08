@@ -18,6 +18,22 @@ node_types:
         description: Meeting point IP address.
         type: string
         tags: [configuration, readonly_to_users]
+      GenericTrafficGeneratorPort.Address:
+        type: string
+        description: The IP address of the port in the traffic configuration.
+        tags: [ setting, configuration ]
+      GenericTrafficGeneratorPort.Gateway:
+        type: string
+        description: The default gateway address of the port in the traffic configuration.
+        tags: [ setting, configuration ]
+      GenericTrafficGeneratorPort.Netmask:
+        type: string
+        description: The netmask address of the port in the traffic configuration.
+        tags: [ setting, configuration ]
+      GenericTrafficGeneratorPort.Mac Address:
+        type: string
+        description: The mac address of the port in the traffic configuration.
+        tags: [ setting, configuration ]
     artifacts:
       driver:
         file: ByteBlowerChassisShell2GDriver.zip
