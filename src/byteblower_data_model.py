@@ -1,6 +1,6 @@
-from cloudshell.shell.core.driver_context import ResourceCommandContext, AutoLoadDetails, AutoLoadAttribute, \
-    AutoLoadResource
 from collections import defaultdict
+
+from cloudshell.shell.core.driver_context import AutoLoadAttribute, AutoLoadDetails, AutoLoadResource, ResourceCommandContext
 
 
 class LegacyUtils(object):
@@ -12,7 +12,7 @@ class LegacyUtils(object):
         root_name = context.resource.name
         root = self.__create_resource_from_datamodel(model_name, root_name)
         attributes = self.__create_attributes_dict(autoload_details.attributes)
-        self.__attach_attributes_to_resource(attributes, '', root)
+        self.__attach_attributes_to_resource(attributes, "", root)
         self.__build_sub_resoruces_hierarchy(root, autoload_details.resources, attributes)
         return root
 
@@ -28,58 +28,52 @@ class LegacyUtils(object):
     def __build_sub_resoruces_hierarchy(self, root, sub_resources, attributes):
         d = defaultdict(list)
         for resource in sub_resources:
-            splitted = resource.relative_address.split('/')
-            parent = '' if len(splitted) == 1 else resource.relative_address.rsplit('/', 1)[0]
+            splitted = resource.relative_address.split("/")
+            parent = "" if len(splitted) == 1 else resource.relative_address.rsplit("/", 1)[0]
             rank = len(splitted)
             d[rank].append((parent, resource))
 
-        self.__set_models_hierarchy_recursively(d, 1, root, '', attributes)
+        self.__set_models_hierarchy_recursively(d, 1, root, "", attributes)
 
     def __set_models_hierarchy_recursively(self, dict, rank, manipulated_resource, resource_relative_addr, attributes):
-        if rank not in dict: # validate if key exists
+        if rank not in dict:  # validate if key exists
             pass
 
         for (parent, resource) in dict[rank]:
             if parent == resource_relative_addr:
-                sub_resource = self.__create_resource_from_datamodel(
-                    resource.model.replace(' ', ''),
-                    resource.name)
+                sub_resource = self.__create_resource_from_datamodel(resource.model.replace(" ", ""), resource.name)
                 self.__attach_attributes_to_resource(attributes, resource.relative_address, sub_resource)
                 manipulated_resource.add_sub_resource(
-                    self.__slice_parent_from_relative_path(parent, resource.relative_address), sub_resource)
-                self.__set_models_hierarchy_recursively(
-                    dict,
-                    rank + 1,
-                    sub_resource,
-                    resource.relative_address,
-                    attributes)
+                    self.__slice_parent_from_relative_path(parent, resource.relative_address), sub_resource
+                )
+                self.__set_models_hierarchy_recursively(dict, rank + 1, sub_resource, resource.relative_address, attributes)
 
     def __attach_attributes_to_resource(self, attributes, curr_relative_addr, resource):
         for attribute in attributes[curr_relative_addr]:
-            setattr(resource, attribute.attribute_name.lower().replace(' ', '_'), attribute.attribute_value)
+            setattr(resource, attribute.attribute_name.lower().replace(" ", "_"), attribute.attribute_value)
         del attributes[curr_relative_addr]
 
     def __slice_parent_from_relative_path(self, parent, relative_addr):
-        if parent is '':
+        if parent is "":
             return relative_addr
-        return relative_addr[len(parent) + 1:] # + 1 because we want to remove the seperator also
+        return relative_addr[len(parent) + 1 :]  # + 1 because we want to remove the seperator also
 
     def __generate_datamodel_classes_dict(self):
         return dict(self.__collect_generated_classes())
 
     def __collect_generated_classes(self):
-        import sys, inspect
+        import inspect
+        import sys
+
         return inspect.getmembers(sys.modules[__name__], inspect.isclass)
 
 
 class ByteBlowerChassisShell2G(object):
     def __init__(self, name):
-        """
-        
-        """
+        """ """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'ByteBlower Chassis Shell 2G'
+        self._cloudshell_model_name = "ByteBlower Chassis Shell 2G"
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -99,20 +93,24 @@ class ByteBlowerChassisShell2G(object):
             result.attributes[attr] = context.resource.attributes[attr]
         return result
 
-    def create_autoload_details(self, relative_path=''):
+    def create_autoload_details(self, relative_path=""):
         """
         :param relative_path:
         :type relative_path: str
         :return
         """
-        resources = [AutoLoadResource(model=self.resources[r].cloudshell_model_name,
-            name=self.resources[r].name,
-            relative_address=self._get_relative_path(r, relative_path))
-            for r in self.resources]
+        resources = [
+            AutoLoadResource(
+                model=self.resources[r].cloudshell_model_name,
+                name=self.resources[r].name,
+                relative_address=self._get_relative_path(r, relative_path),
+            )
+            for r in self.resources
+        ]
         attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
-            curr_path = relative_path + '/' + r if relative_path else r
+            curr_path = relative_path + "/" + r if relative_path else r
             curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
             autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
         return autoload_details
@@ -127,7 +125,7 @@ class ByteBlowerChassisShell2G(object):
         :return: Combined path
         :rtype str
         """
-        return parent_path + '/' + child_path if parent_path else child_path
+        return parent_path + "/" + child_path if parent_path else child_path
 
     @staticmethod
     def _merge_autoload_details(autoload_details1, autoload_details2):
@@ -152,14 +150,18 @@ class ByteBlowerChassisShell2G(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'ByteBlowerChassisShell2G'
+        return "ByteBlowerChassisShell2G"
 
     @property
     def meeting_point(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Meeting Point'] if 'ByteBlower Chassis Shell 2G.Meeting Point' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Meeting Point"]
+            if "ByteBlower Chassis Shell 2G.Meeting Point" in self.attributes
+            else None
+        )
 
     @meeting_point.setter
     def meeting_point(self, value):
@@ -167,14 +169,18 @@ class ByteBlowerChassisShell2G(object):
         Meeting point IP address.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Meeting Point'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Meeting Point"] = value
 
     @property
     def user(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.User'] if 'ByteBlower Chassis Shell 2G.User' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.User"]
+            if "ByteBlower Chassis Shell 2G.User" in self.attributes
+            else None
+        )
 
     @user.setter
     def user(self, value):
@@ -182,14 +188,18 @@ class ByteBlowerChassisShell2G(object):
         User with administrative privileges
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.User'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.User"] = value
 
     @property
     def password(self):
         """
         :rtype: string
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Password'] if 'ByteBlower Chassis Shell 2G.Password' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Password"]
+            if "ByteBlower Chassis Shell 2G.Password" in self.attributes
+            else None
+        )
 
     @password.setter
     def password(self, value):
@@ -197,14 +207,18 @@ class ByteBlowerChassisShell2G(object):
         Password
         :type value: string
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Password'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Password"] = value
 
     @property
     def controller_tcp_port(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Controller TCP Port'] if 'ByteBlower Chassis Shell 2G.Controller TCP Port' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Controller TCP Port"]
+            if "ByteBlower Chassis Shell 2G.Controller TCP Port" in self.attributes
+            else None
+        )
 
     @controller_tcp_port.setter
     def controller_tcp_port(self, value):
@@ -212,14 +226,18 @@ class ByteBlowerChassisShell2G(object):
         The TCP port of the traffic server. Relevant only in case an external server is configured. Default TCP port should be used if kept empty.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Controller TCP Port'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Controller TCP Port"] = value
 
     @property
     def controller_address(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Controller Address'] if 'ByteBlower Chassis Shell 2G.Controller Address' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Controller Address"]
+            if "ByteBlower Chassis Shell 2G.Controller Address" in self.attributes
+            else None
+        )
 
     @controller_address.setter
     def controller_address(self, value):
@@ -227,14 +245,18 @@ class ByteBlowerChassisShell2G(object):
         The IP address of the traffic server. Relevant only in case an external server is configured.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Controller Address'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Controller Address"] = value
 
     @property
     def client_install_path(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Client Install Path'] if 'ByteBlower Chassis Shell 2G.Client Install Path' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Client Install Path"]
+            if "ByteBlower Chassis Shell 2G.Client Install Path" in self.attributes
+            else None
+        )
 
     @client_install_path.setter
     def client_install_path(self, value):
@@ -242,14 +264,18 @@ class ByteBlowerChassisShell2G(object):
         The path in which the traffic client is installed on the Execution Server. For example "C:/Program Files (x86)/Ixia/IxLoad/5.10-GA".
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Client Install Path'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Client Install Path"] = value
 
     @property
     def power_management(self):
         """
         :rtype: bool
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Power Management'] if 'ByteBlower Chassis Shell 2G.Power Management' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Power Management"]
+            if "ByteBlower Chassis Shell 2G.Power Management" in self.attributes
+            else None
+        )
 
     @power_management.setter
     def power_management(self, value=True):
@@ -257,14 +283,18 @@ class ByteBlowerChassisShell2G(object):
         Used by the power management orchestration, if enabled, to determine whether to automatically manage the device power status. Enabled by default.
         :type value: bool
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Power Management'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Power Management"] = value
 
     @property
     def serial_number(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Serial Number'] if 'ByteBlower Chassis Shell 2G.Serial Number' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Serial Number"]
+            if "ByteBlower Chassis Shell 2G.Serial Number" in self.attributes
+            else None
+        )
 
     @serial_number.setter
     def serial_number(self, value):
@@ -272,14 +302,18 @@ class ByteBlowerChassisShell2G(object):
         The serial number of the resource.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Serial Number'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Serial Number"] = value
 
     @property
     def server_description(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.Server Description'] if 'ByteBlower Chassis Shell 2G.Server Description' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.Server Description"]
+            if "ByteBlower Chassis Shell 2G.Server Description" in self.attributes
+            else None
+        )
 
     @server_description.setter
     def server_description(self, value):
@@ -287,7 +321,7 @@ class ByteBlowerChassisShell2G(object):
         The full description of the server. Usually includes the OS, exact firmware version and additional characteritics of the device.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.Server Description'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.Server Description"] = value
 
     @property
     def name(self):
@@ -299,7 +333,7 @@ class ByteBlowerChassisShell2G(object):
     @name.setter
     def name(self, value):
         """
-        
+
         :type value: str
         """
         self._name = value
@@ -314,7 +348,7 @@ class ByteBlowerChassisShell2G(object):
     @cloudshell_model_name.setter
     def cloudshell_model_name(self, value):
         """
-        
+
         :type value: str
         """
         self._cloudshell_model_name = value
@@ -324,22 +358,30 @@ class ByteBlowerChassisShell2G(object):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorChassis.Model Name'] if 'CS_TrafficGeneratorChassis.Model Name' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorChassis.Model Name"]
+            if "CS_TrafficGeneratorChassis.Model Name" in self.attributes
+            else None
+        )
 
     @model_name.setter
-    def model_name(self, value=''):
+    def model_name(self, value=""):
         """
         The catalog name of the device model. This attribute will be displayed in CloudShell instead of the CloudShell model.
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorChassis.Model Name'] = value
+        self.attributes["CS_TrafficGeneratorChassis.Model Name"] = value
 
     @property
     def vendor(self):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorChassis.Vendor'] if 'CS_TrafficGeneratorChassis.Vendor' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorChassis.Vendor"]
+            if "CS_TrafficGeneratorChassis.Vendor" in self.attributes
+            else None
+        )
 
     @vendor.setter
     def vendor(self, value):
@@ -347,14 +389,18 @@ class ByteBlowerChassisShell2G(object):
         The name of the device manufacture.
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorChassis.Vendor'] = value
+        self.attributes["CS_TrafficGeneratorChassis.Vendor"] = value
 
     @property
     def version(self):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorChassis.Version'] if 'CS_TrafficGeneratorChassis.Version' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorChassis.Version"]
+            if "CS_TrafficGeneratorChassis.Version" in self.attributes
+            else None
+        )
 
     @version.setter
     def version(self, value):
@@ -362,17 +408,15 @@ class ByteBlowerChassisShell2G(object):
         The firmware version of the resource.
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorChassis.Version'] = value
+        self.attributes["CS_TrafficGeneratorChassis.Version"] = value
 
 
 class GenericTrafficGeneratorModule(object):
     def __init__(self, name):
-        """
-        
-        """
+        """ """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule'
+        self._cloudshell_model_name = "ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule"
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -392,20 +436,24 @@ class GenericTrafficGeneratorModule(object):
             result.attributes[attr] = context.resource.attributes[attr]
         return result
 
-    def create_autoload_details(self, relative_path=''):
+    def create_autoload_details(self, relative_path=""):
         """
         :param relative_path:
         :type relative_path: str
         :return
         """
-        resources = [AutoLoadResource(model=self.resources[r].cloudshell_model_name,
-            name=self.resources[r].name,
-            relative_address=self._get_relative_path(r, relative_path))
-            for r in self.resources]
+        resources = [
+            AutoLoadResource(
+                model=self.resources[r].cloudshell_model_name,
+                name=self.resources[r].name,
+                relative_address=self._get_relative_path(r, relative_path),
+            )
+            for r in self.resources
+        ]
         attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
-            curr_path = relative_path + '/' + r if relative_path else r
+            curr_path = relative_path + "/" + r if relative_path else r
             curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
             autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
         return autoload_details
@@ -420,7 +468,7 @@ class GenericTrafficGeneratorModule(object):
         :return: Combined path
         :rtype str
         """
-        return parent_path + '/' + child_path if parent_path else child_path
+        return parent_path + "/" + child_path if parent_path else child_path
 
     @staticmethod
     def _merge_autoload_details(autoload_details1, autoload_details2):
@@ -445,37 +493,45 @@ class GenericTrafficGeneratorModule(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'GenericTrafficGeneratorModule'
+        return "GenericTrafficGeneratorModule"
 
     @property
     def version(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version'] if 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version"]
+            if "ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version" in self.attributes
+            else None
+        )
 
     @version.setter
-    def version(self, value=''):
+    def version(self, value=""):
         """
         The firmware version of the resource.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version"] = value
 
     @property
     def serial_number(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number'] if 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number"]
+            if "ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number" in self.attributes
+            else None
+        )
 
     @serial_number.setter
-    def serial_number(self, value=''):
+    def serial_number(self, value=""):
         """
-        
+
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number"] = value
 
     @property
     def name(self):
@@ -487,7 +543,7 @@ class GenericTrafficGeneratorModule(object):
     @name.setter
     def name(self, value):
         """
-        
+
         :type value: str
         """
         self._name = value
@@ -502,7 +558,7 @@ class GenericTrafficGeneratorModule(object):
     @cloudshell_model_name.setter
     def cloudshell_model_name(self, value):
         """
-        
+
         :type value: str
         """
         self._cloudshell_model_name = value
@@ -512,25 +568,27 @@ class GenericTrafficGeneratorModule(object):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorModule.Model Name'] if 'CS_TrafficGeneratorModule.Model Name' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorModule.Model Name"]
+            if "CS_TrafficGeneratorModule.Model Name" in self.attributes
+            else None
+        )
 
     @model_name.setter
-    def model_name(self, value=''):
+    def model_name(self, value=""):
         """
         The catalog name of the device model. This attribute will be displayed in CloudShell instead of the CloudShell model.
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorModule.Model Name'] = value
+        self.attributes["CS_TrafficGeneratorModule.Model Name"] = value
 
 
 class GenericTrafficGeneratorPortGroup(object):
     def __init__(self, name):
-        """
-        
-        """
+        """ """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPortGroup'
+        self._cloudshell_model_name = "ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPortGroup"
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -550,20 +608,24 @@ class GenericTrafficGeneratorPortGroup(object):
             result.attributes[attr] = context.resource.attributes[attr]
         return result
 
-    def create_autoload_details(self, relative_path=''):
+    def create_autoload_details(self, relative_path=""):
         """
         :param relative_path:
         :type relative_path: str
         :return
         """
-        resources = [AutoLoadResource(model=self.resources[r].cloudshell_model_name,
-            name=self.resources[r].name,
-            relative_address=self._get_relative_path(r, relative_path))
-            for r in self.resources]
+        resources = [
+            AutoLoadResource(
+                model=self.resources[r].cloudshell_model_name,
+                name=self.resources[r].name,
+                relative_address=self._get_relative_path(r, relative_path),
+            )
+            for r in self.resources
+        ]
         attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
-            curr_path = relative_path + '/' + r if relative_path else r
+            curr_path = relative_path + "/" + r if relative_path else r
             curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
             autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
         return autoload_details
@@ -578,7 +640,7 @@ class GenericTrafficGeneratorPortGroup(object):
         :return: Combined path
         :rtype str
         """
-        return parent_path + '/' + child_path if parent_path else child_path
+        return parent_path + "/" + child_path if parent_path else child_path
 
     @staticmethod
     def _merge_autoload_details(autoload_details1, autoload_details2):
@@ -603,7 +665,7 @@ class GenericTrafficGeneratorPortGroup(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'GenericTrafficGeneratorPortGroup'
+        return "GenericTrafficGeneratorPortGroup"
 
     @property
     def name(self):
@@ -615,7 +677,7 @@ class GenericTrafficGeneratorPortGroup(object):
     @name.setter
     def name(self, value):
         """
-        
+
         :type value: str
         """
         self._name = value
@@ -630,7 +692,7 @@ class GenericTrafficGeneratorPortGroup(object):
     @cloudshell_model_name.setter
     def cloudshell_model_name(self, value):
         """
-        
+
         :type value: str
         """
         self._cloudshell_model_name = value
@@ -638,12 +700,10 @@ class GenericTrafficGeneratorPortGroup(object):
 
 class GenericTrafficGeneratorPort(object):
     def __init__(self, name):
-        """
-        
-        """
+        """ """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort'
+        self._cloudshell_model_name = "ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort"
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -663,20 +723,24 @@ class GenericTrafficGeneratorPort(object):
             result.attributes[attr] = context.resource.attributes[attr]
         return result
 
-    def create_autoload_details(self, relative_path=''):
+    def create_autoload_details(self, relative_path=""):
         """
         :param relative_path:
         :type relative_path: str
         :return
         """
-        resources = [AutoLoadResource(model=self.resources[r].cloudshell_model_name,
-            name=self.resources[r].name,
-            relative_address=self._get_relative_path(r, relative_path))
-            for r in self.resources]
+        resources = [
+            AutoLoadResource(
+                model=self.resources[r].cloudshell_model_name,
+                name=self.resources[r].name,
+                relative_address=self._get_relative_path(r, relative_path),
+            )
+            for r in self.resources
+        ]
         attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
-            curr_path = relative_path + '/' + r if relative_path else r
+            curr_path = relative_path + "/" + r if relative_path else r
             curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
             autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
         return autoload_details
@@ -691,7 +755,7 @@ class GenericTrafficGeneratorPort(object):
         :return: Combined path
         :rtype str
         """
-        return parent_path + '/' + child_path if parent_path else child_path
+        return parent_path + "/" + child_path if parent_path else child_path
 
     @staticmethod
     def _merge_autoload_details(autoload_details1, autoload_details2):
@@ -716,14 +780,18 @@ class GenericTrafficGeneratorPort(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'GenericTrafficGeneratorPort'
+        return "GenericTrafficGeneratorPort"
 
     @property
     def media_type(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort.Media Type'] if 'ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort.Media Type' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort.Media Type"]
+            if "ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort.Media Type" in self.attributes
+            else None
+        )
 
     @media_type.setter
     def media_type(self, value):
@@ -731,7 +799,7 @@ class GenericTrafficGeneratorPort(object):
         Interface media type. Possible values are Fiber and/or Copper (comma-separated).
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort.Media Type'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort.Media Type"] = value
 
     @property
     def name(self):
@@ -743,7 +811,7 @@ class GenericTrafficGeneratorPort(object):
     @name.setter
     def name(self, value):
         """
-        
+
         :type value: str
         """
         self._name = value
@@ -758,7 +826,7 @@ class GenericTrafficGeneratorPort(object):
     @cloudshell_model_name.setter
     def cloudshell_model_name(self, value):
         """
-        
+
         :type value: str
         """
         self._cloudshell_model_name = value
@@ -768,7 +836,11 @@ class GenericTrafficGeneratorPort(object):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorPort.Max Speed'] if 'CS_TrafficGeneratorPort.Max Speed' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorPort.Max Speed"]
+            if "CS_TrafficGeneratorPort.Max Speed" in self.attributes
+            else None
+        )
 
     @max_speed.setter
     def max_speed(self, value):
@@ -776,14 +848,18 @@ class GenericTrafficGeneratorPort(object):
         Max speed supported by the interface (default units - MB)
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorPort.Max Speed'] = value
+        self.attributes["CS_TrafficGeneratorPort.Max Speed"] = value
 
     @property
     def logical_name(self):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorPort.Logical Name'] if 'CS_TrafficGeneratorPort.Logical Name' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorPort.Logical Name"]
+            if "CS_TrafficGeneratorPort.Logical Name" in self.attributes
+            else None
+        )
 
     @logical_name.setter
     def logical_name(self, value):
@@ -791,14 +867,18 @@ class GenericTrafficGeneratorPort(object):
         The port's logical name in the test configuration. If kept emtpy - allocation will applied in the blue print.
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorPort.Logical Name'] = value
+        self.attributes["CS_TrafficGeneratorPort.Logical Name"] = value
 
     @property
     def configured_controllers(self):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorPort.Configured Controllers'] if 'CS_TrafficGeneratorPort.Configured Controllers' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorPort.Configured Controllers"]
+            if "CS_TrafficGeneratorPort.Configured Controllers" in self.attributes
+            else None
+        )
 
     @configured_controllers.setter
     def configured_controllers(self, value):
@@ -806,17 +886,15 @@ class GenericTrafficGeneratorPort(object):
         specifies what controller can be used with the ports (IxLoad controller, BP controller etc...)
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorPort.Configured Controllers'] = value
+        self.attributes["CS_TrafficGeneratorPort.Configured Controllers"] = value
 
 
 class ByteBlowerEndPoint(object):
     def __init__(self, name):
-        """
-        
-        """
+        """ """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint'
+        self._cloudshell_model_name = "ByteBlower Chassis Shell 2G.ByteBlowerEndPoint"
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -836,20 +914,24 @@ class ByteBlowerEndPoint(object):
             result.attributes[attr] = context.resource.attributes[attr]
         return result
 
-    def create_autoload_details(self, relative_path=''):
+    def create_autoload_details(self, relative_path=""):
         """
         :param relative_path:
         :type relative_path: str
         :return
         """
-        resources = [AutoLoadResource(model=self.resources[r].cloudshell_model_name,
-            name=self.resources[r].name,
-            relative_address=self._get_relative_path(r, relative_path))
-            for r in self.resources]
+        resources = [
+            AutoLoadResource(
+                model=self.resources[r].cloudshell_model_name,
+                name=self.resources[r].name,
+                relative_address=self._get_relative_path(r, relative_path),
+            )
+            for r in self.resources
+        ]
         attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
-            curr_path = relative_path + '/' + r if relative_path else r
+            curr_path = relative_path + "/" + r if relative_path else r
             curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
             autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
         return autoload_details
@@ -864,7 +946,7 @@ class ByteBlowerEndPoint(object):
         :return: Combined path
         :rtype str
         """
-        return parent_path + '/' + child_path if parent_path else child_path
+        return parent_path + "/" + child_path if parent_path else child_path
 
     @staticmethod
     def _merge_autoload_details(autoload_details1, autoload_details2):
@@ -889,14 +971,18 @@ class ByteBlowerEndPoint(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'ByteBlowerEndPoint'
+        return "ByteBlowerEndPoint"
 
     @property
     def version(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version'] if 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version"]
+            if "ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version" in self.attributes
+            else None
+        )
 
     @version.setter
     def version(self, value):
@@ -904,14 +990,18 @@ class ByteBlowerEndPoint(object):
         The OS and client version of the endpoint.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version"] = value
 
     @property
     def address(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address'] if 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address"]
+            if "ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address" in self.attributes
+            else None
+        )
 
     @address.setter
     def address(self, value):
@@ -919,14 +1009,18 @@ class ByteBlowerEndPoint(object):
         The IP address of the endpoint.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address"] = value
 
     @property
     def identifier(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier'] if 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier"]
+            if "ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier" in self.attributes
+            else None
+        )
 
     @identifier.setter
     def identifier(self, value):
@@ -934,14 +1028,18 @@ class ByteBlowerEndPoint(object):
         The unique ID of the endpoint.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier"] = value
 
     @property
     def ssid(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID'] if 'ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID"]
+            if "ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID" in self.attributes
+            else None
+        )
 
     @ssid.setter
     def ssid(self, value):
@@ -949,7 +1047,7 @@ class ByteBlowerEndPoint(object):
         The endpoints's SSID. If kept emtpy - allocation will applied in the blue print.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID"] = value
 
     @property
     def name(self):
@@ -961,7 +1059,7 @@ class ByteBlowerEndPoint(object):
     @name.setter
     def name(self, value):
         """
-        
+
         :type value: str
         """
         self._name = value
@@ -976,7 +1074,7 @@ class ByteBlowerEndPoint(object):
     @cloudshell_model_name.setter
     def cloudshell_model_name(self, value):
         """
-        
+
         :type value: str
         """
         self._cloudshell_model_name = value
@@ -986,7 +1084,11 @@ class ByteBlowerEndPoint(object):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorPort.Max Speed'] if 'CS_TrafficGeneratorPort.Max Speed' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorPort.Max Speed"]
+            if "CS_TrafficGeneratorPort.Max Speed" in self.attributes
+            else None
+        )
 
     @max_speed.setter
     def max_speed(self, value):
@@ -994,14 +1096,18 @@ class ByteBlowerEndPoint(object):
         Max speed supported by the interface (default units - MB)
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorPort.Max Speed'] = value
+        self.attributes["CS_TrafficGeneratorPort.Max Speed"] = value
 
     @property
     def logical_name(self):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorPort.Logical Name'] if 'CS_TrafficGeneratorPort.Logical Name' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorPort.Logical Name"]
+            if "CS_TrafficGeneratorPort.Logical Name" in self.attributes
+            else None
+        )
 
     @logical_name.setter
     def logical_name(self, value):
@@ -1009,14 +1115,18 @@ class ByteBlowerEndPoint(object):
         The port's logical name in the test configuration. If kept emtpy - allocation will applied in the blue print.
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorPort.Logical Name'] = value
+        self.attributes["CS_TrafficGeneratorPort.Logical Name"] = value
 
     @property
     def configured_controllers(self):
         """
         :rtype: str
         """
-        return self.attributes['CS_TrafficGeneratorPort.Configured Controllers'] if 'CS_TrafficGeneratorPort.Configured Controllers' in self.attributes else None
+        return (
+            self.attributes["CS_TrafficGeneratorPort.Configured Controllers"]
+            if "CS_TrafficGeneratorPort.Configured Controllers" in self.attributes
+            else None
+        )
 
     @configured_controllers.setter
     def configured_controllers(self, value):
@@ -1024,17 +1134,15 @@ class ByteBlowerEndPoint(object):
         specifies what controller can be used with the ports (IxLoad controller, BP controller etc...)
         :type value: str
         """
-        self.attributes['CS_TrafficGeneratorPort.Configured Controllers'] = value
+        self.attributes["CS_TrafficGeneratorPort.Configured Controllers"] = value
 
 
 class GenericPowerPort(object):
     def __init__(self, name):
-        """
-        
-        """
+        """ """
         self.attributes = {}
         self.resources = {}
-        self._cloudshell_model_name = 'ByteBlower Chassis Shell 2G.GenericPowerPort'
+        self._cloudshell_model_name = "ByteBlower Chassis Shell 2G.GenericPowerPort"
         self._name = name
 
     def add_sub_resource(self, relative_path, sub_resource):
@@ -1054,20 +1162,24 @@ class GenericPowerPort(object):
             result.attributes[attr] = context.resource.attributes[attr]
         return result
 
-    def create_autoload_details(self, relative_path=''):
+    def create_autoload_details(self, relative_path=""):
         """
         :param relative_path:
         :type relative_path: str
         :return
         """
-        resources = [AutoLoadResource(model=self.resources[r].cloudshell_model_name,
-            name=self.resources[r].name,
-            relative_address=self._get_relative_path(r, relative_path))
-            for r in self.resources]
+        resources = [
+            AutoLoadResource(
+                model=self.resources[r].cloudshell_model_name,
+                name=self.resources[r].name,
+                relative_address=self._get_relative_path(r, relative_path),
+            )
+            for r in self.resources
+        ]
         attributes = [AutoLoadAttribute(relative_path, a, self.attributes[a]) for a in self.attributes]
         autoload_details = AutoLoadDetails(resources, attributes)
         for r in self.resources:
-            curr_path = relative_path + '/' + r if relative_path else r
+            curr_path = relative_path + "/" + r if relative_path else r
             curr_auto_load_details = self.resources[r].create_autoload_details(curr_path)
             autoload_details = self._merge_autoload_details(autoload_details, curr_auto_load_details)
         return autoload_details
@@ -1082,7 +1194,7 @@ class GenericPowerPort(object):
         :return: Combined path
         :rtype str
         """
-        return parent_path + '/' + child_path if parent_path else child_path
+        return parent_path + "/" + child_path if parent_path else child_path
 
     @staticmethod
     def _merge_autoload_details(autoload_details1, autoload_details2):
@@ -1107,14 +1219,18 @@ class GenericPowerPort(object):
         Returns the name of the Cloudshell model
         :return:
         """
-        return 'GenericPowerPort'
+        return "GenericPowerPort"
 
     @property
     def model(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Model'] if 'ByteBlower Chassis Shell 2G.GenericPowerPort.Model' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Model"]
+            if "ByteBlower Chassis Shell 2G.GenericPowerPort.Model" in self.attributes
+            else None
+        )
 
     @model.setter
     def model(self, value):
@@ -1122,29 +1238,37 @@ class GenericPowerPort(object):
         The device model. This information is typically used for abstract resource filtering.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Model'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Model"] = value
 
     @property
     def serial_number(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Serial Number'] if 'ByteBlower Chassis Shell 2G.GenericPowerPort.Serial Number' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Serial Number"]
+            if "ByteBlower Chassis Shell 2G.GenericPowerPort.Serial Number" in self.attributes
+            else None
+        )
 
     @serial_number.setter
     def serial_number(self, value):
         """
-        
+
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Serial Number'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Serial Number"] = value
 
     @property
     def version(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Version'] if 'ByteBlower Chassis Shell 2G.GenericPowerPort.Version' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Version"]
+            if "ByteBlower Chassis Shell 2G.GenericPowerPort.Version" in self.attributes
+            else None
+        )
 
     @version.setter
     def version(self, value):
@@ -1152,14 +1276,18 @@ class GenericPowerPort(object):
         The firmware version of the resource.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Version'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Version"] = value
 
     @property
     def port_description(self):
         """
         :rtype: str
         """
-        return self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Port Description'] if 'ByteBlower Chassis Shell 2G.GenericPowerPort.Port Description' in self.attributes else None
+        return (
+            self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Port Description"]
+            if "ByteBlower Chassis Shell 2G.GenericPowerPort.Port Description" in self.attributes
+            else None
+        )
 
     @port_description.setter
     def port_description(self, value):
@@ -1167,7 +1295,7 @@ class GenericPowerPort(object):
         The description of the port as configured in the device.
         :type value: str
         """
-        self.attributes['ByteBlower Chassis Shell 2G.GenericPowerPort.Port Description'] = value
+        self.attributes["ByteBlower Chassis Shell 2G.GenericPowerPort.Port Description"] = value
 
     @property
     def name(self):
@@ -1179,7 +1307,7 @@ class GenericPowerPort(object):
     @name.setter
     def name(self, value):
         """
-        
+
         :type value: str
         """
         self._name = value
@@ -1194,7 +1322,7 @@ class GenericPowerPort(object):
     @cloudshell_model_name.setter
     def cloudshell_model_name(self, value):
         """
-        
+
         :type value: str
         """
         self._cloudshell_model_name = value
@@ -1204,15 +1332,12 @@ class GenericPowerPort(object):
         """
         :rtype: str
         """
-        return self.attributes['CS_PowerPort.Model Name'] if 'CS_PowerPort.Model Name' in self.attributes else None
+        return self.attributes["CS_PowerPort.Model Name"] if "CS_PowerPort.Model Name" in self.attributes else None
 
     @model_name.setter
-    def model_name(self, value=''):
+    def model_name(self, value=""):
         """
         The catalog name of the device model. This attribute will be displayed in CloudShell instead of the CloudShell model.
         :type value: str
         """
-        self.attributes['CS_PowerPort.Model Name'] = value
-
-
-
+        self.attributes["CS_PowerPort.Model Name"] = value
