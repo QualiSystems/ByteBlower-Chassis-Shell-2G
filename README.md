@@ -2,9 +2,9 @@
 
 # ByteBlower Chassis 2G Shell  
 
-Release date: October 2019
+Release date: May 2021
 
-Shell version: 2.0.1
+Shell version: 3.0.2
 
 Document version: 1.2.3
 
@@ -26,18 +26,16 @@ CloudShell's traffic generator shells enable you to conduct traffic test activit
 For additional information on traffic generator shell architecture, and setting up and using a traffic generator in CloudShell, see the [Traffic Generators Overiew](http://help.quali.com/Online%20Help/9.0/Portal/Content/CSP/LAB-MNG/Trffc-Gens.htm?Highlight=traffic%20generator%20overview) online help topic.
 
 ### ByteBlower Chassis 2G Shell
-The Ixia Chassis 2G Shell provides you with connectivity and management capabilities such as device structure discovery and power management for the Ixia chassis. 
+The ByteBlower Chassis 2G Shell provides you with connectivity and management capabilities such as device structure discovery and power management for the ByteBlower chassis. 
 
-For more information on the Ixia Chassis, see the Ixia official product documentation.
+For more information on the ByteBlower Chassis, see the ByteBlower official product documentation.
 
-To model an Ixia Chassis device in CloudShell, use one of the following controllers, which provide automation commands to run on the chassis, such as Load Configuration, Start Traffic/Test, Get Statistics: 
+To model an ByteBlower Chassis device in CloudShell, use one of the following controllers, which provide automation commands to run on the chassis, such as Load Configuration, Start Traffic/Test, Get Statistics: 
 
-▪ <a href="https://community.quali.com/repos/1259/ixia-ixnetwork-controller-shell" target="_blank">Ixia IxNetwork Controller Shell</a>
-
-▪ <a href="https://community.quali.com/repos/1396/ixia-ixload-controller-shell" target="_blank">Ixia IxLoad Controller Shell</a>
+▪ <a href="https://community.quali.com/repos/1259/ByteBlower-controller-shell" target="_blank">ByteBlower Controller Shell</a>
 
 ### Standard version
-The Ixia Chassis 2G Shell 2.0.4 is based on the Traffic Shell standard *cloudshell_traffic_generator_chassis_standard_1_0_3.yaml*.
+The ByteBlower Chassis 2G Shell 3.0.2 is based on the Traffic Shell standard *cloudshell_traffic_generator_chassis_standard_1_0_4.yaml*.
 
 For detailed information about the shell’s structure and attributes, see the [Traffic Shell standard](https://github.com/QualiSystems/shell-traffic-standard/blob/master/spec/traffic_standard.md) in GitHub.
 
@@ -46,49 +44,55 @@ For detailed information about the shell’s structure and attributes, see the [
 
 ### Requirements
 
-▪ CloudShell version **8.1 and up**
-
-▪ Ixia chassis version **8.01 and up**
+▪ CloudShell version **9.3 and up**
 
 **Note:** If your CloudShell version does not support this shell, you should consider upgrading to a later version of CloudShell or contact customer support.
 
 ### Data Model
-#### **Ixia Chassis Families and Models**
+#### **ByteBlower Chassis Families and Models**
 
 The chassis families and models are listed in the following table:
 
-|Family|Model|Description|
-|:---|:---|:---|
-|CS_TrafficGeneratorChassis|Ixia Chassis Shell 2G|Ixia chassis|
-|CS_TrafficGeneratorModule|Ixia Chassis Shell 2G.GenericTrafficGeneratorModule|Ixia module|
-|CS_TrafficGeneratorPortGroup|Ixia Chassis Shell 2G.GenericTrafficGeneratorPortGroup|Ixia port group|
-|CS_TrafficGeneratorPort|Ixia Chassis Shell 2G.GenericTrafficGeneratorPort|Ixia port|
-|CS_PowerPort|Ixia Chassis Shell 2G.GenericPowerPort|power port|
+|Family|Model| Description          |
+|:---|:---|:---------------------|
+|CS_TrafficGeneratorChassis|ByteBlower Chassis Shell 2G| ByteBlower chassis   |
+|CS_TrafficGeneratorModule|ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule| ByteBlower module    |
+|CS_TrafficGeneratorPort|ByteBlower Chassis Shell 2G.GenericTrafficGeneratorPort| ByteBlower port      |
+|CS_TrafficGeneratorPort|ByteBlower Chassis Shell 2G.ByteBlowerEndPoint| ByteBlower end-point |
 
-#### **Ixia Chassis Attributes**
+#### **ByteBlower Chassis Attributes**
 
 The attribute names and types are listed in the following table:
 
-|Attribute|Type|Default value|Description|
-|:---|:---|:---|:---|
-|CS_TrafficGeneratorChassis.Model Name|string||The catalog name of the Ixia chassis model. This attribute will be displayed in CloudShell instead of the CloudShell model.|
-|CS_TrafficGeneratorChassis.Vendor|string|Spirent|The name of the Ixia chassis manufacture.|
-|CS_TrafficGeneratorChassis.Version|string||The firmware version of the Ixia chassis.|
-|Ixia Chassis Shell 2G.Serial Number|string||The serial number of the Ixia chassis.|
-|Ixia Chassis Shell 2G.Server Description|string||The full description of the server. Usually includes the OS, exact firmware version and additional characteritics of the device.|
-|Ixia Chassis Shell 2G.Client Install Path|string||NA for this resource.|
-|Ixia Chassis Shell 2G.Controller Address|string||The IP address of IxTclServer - either on the chassis or on third party machine.|
-|Ixia Chassis Shell 2G.Controller TCP Port|string||The TCP port of the IxTclServer - default is 4555 for Windows based Ixia chassis and 8022 for Linux based Ixia chassis.|
-|Ixia Chassis Shell 2G.Password|string||NA for this resource.|
-|Ixia Chassis Shell 2G.Power Management|boolean|True|Used by the power management orchestration, if enabled, to determine whether to automatically manage the device power status.|
-|Ixia Chassis Shell 2G.User|string||NA for this resource.|
-|CS_TrafficGeneratorModule.Model Name|string||The catalog name of the Ixia module model. This attribute will be displayed in CloudShell instead of the CloudShell model.|
-|Ixia Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number|string||The serial number of the Ixia module.|
-|Ixia Chassis Shell 2G.GenericTrafficGeneratorModule.Version|string||The firmware version of the Ixia module.|
-|CS_TrafficGeneratorPort.Configured Controllers|string||Specifies what controller can be used with the ports (IxLoad controller, BP controller etc...)|
-|CS_TrafficGeneratorPort.Logical Name|string||The port's logical name in the test configuration. If kept emtpy - allocation will applied in the blue print.|
-|CS_TrafficGeneratorPort.Max Speed|string||Max speed supported by the interface (default units - MB).|
-|Ixia Chassis Shell 2G.CS_TrafficGeneratorPort.Media Type|string||Interface media type. Possible values are Fiber and/or Copper (comma-separated).|
+| Attribute                                                               |Type| Default value | Description                                                                                                                      |
+|:------------------------------------------------------------------------|:---|:--------------|:---------------------------------------------------------------------------------------------------------------------------------|
+| CS_TrafficGeneratorChassis.Model Name                                   |string|               | The catalog name of the ByteBlower chassis model. This attribute will be displayed in CloudShell instead of the CloudShell model. |
+| CS_TrafficGeneratorChassis.Vendor                                       |string| Excentis      | The name of the ByteBlower chassis manufacture.                                                                                  |
+| CS_TrafficGeneratorChassis.Version                                      |string|               | The firmware version of the ByteBlower chassis.                                                                                  |
+| ByteBlower Chassis Shell 2G.Serial Number                               |string|               | The serial number of the ByteBlower chassis.                                                                                     |
+| ByteBlower Chassis Shell 2G.Server Description                          |string|               | The full description of the server. Usually includes the OS, exact firmware version and additional characteritics of the device. |
+| ByteBlower Chassis Shell 2G.Client Install Path                         |string|               | NA for this resource.                                                                                                            |
+| ByteBlower Chassis Shell 2G.Controller Address                          |string|               | NA for this resource.                                                                                                            |
+| ByteBlower Chassis Shell 2G.Meeting Point                               |string|               | The IP address of the meeting point, appliacable only when ByteBlower is using meeting point.                                    |
+| ByteBlower Chassis Shell 2G.Controller TCP Port                         |string|               | NA for this resource.                                                                                                            |
+| ByteBlower Chassis Shell 2G.Password                                    |string|               | NA for this resource.                                                                                                            |
+| ByteBlower Chassis Shell 2G.Power Management                            |boolean| True          | Used by the power management orchestration, if enabled, to determine whether to automatically manage the device power status.    |
+| ByteBlower Chassis Shell 2G.User                                        |string|               | NA for this resource.                                                                                                            |
+| CS_TrafficGeneratorModule.Model Name                                    |string|               | The catalog name of the ByteBlower module model. This attribute will be displayed in CloudShell instead of the CloudShell model. |
+| ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Serial Number |string|               | The serial number of the ByteBlower module.                                                                                      |
+| ByteBlower Chassis Shell 2G.GenericTrafficGeneratorModule.Version       |string|               | The firmware version of the ByteBlower module.                                                                                   |
+| CS_TrafficGeneratorPort.Configured Controllers                          |string|               | NA for this resource. |
+| CS_TrafficGeneratorPort.Logical Name                                    |string|               | The port's logical name in the test configuration. If kept emtpy - allocation will applied in the blue print.                                                                                                                      |
+| CS_TrafficGeneratorPort.Max Speed                                       |string|               | Max speed supported by the interface (default units - MB).                       |
+| ByteBlower Chassis Shell 2G.CS_TrafficGeneratorPort.Media Type          |string|               | Interface media type. Possible values are Fiber and/or Copper (comma-separated). |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address                  |string|               | The IP address of the port in the traffic configuration.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Gateway                  |string|               | The default gateway address of the port in the traffic configuration.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Mac Address              |string|               | The mac address of the port in the traffic configuration.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Netmask                  |string|               | The netmask address of the port in the traffic configuration.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Address                  |string|               | The IP address of the endpoint.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Identifier               |string|               | The unique ID of the endpoint.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.SSID                     |string|               | The endpoints's SSID. If kept emtpy - allocation will applied in the blue print.                                                                                      |
+| ByteBlower Chassis Shell 2G.ByteBlowerEndPoint.Version                  |string|               | The endpoints's SSID. If kept emtpy - allocation will applied in the blue print.                                                                                      |
 
 ### Automation
 This section describes the automation (drivers or scripts) associated with the data model. The shell’s driver is associated with the model and provided as part of the shell package).There are two types of automation processes, Autoload and Resource. Autoload is executed when creating the resource in the Inventory dashboard, while resource commands are run in the Sandbox, providing that the resource has been discovered and is online.
@@ -100,7 +104,7 @@ For Traffic Generator Shells, commands are configured and executed from the cont
 |Autoload|Discovers the chassis, its hierarchy and attributes when creating the resource. The command can be rerun in the Inventory dashboard and not in the sandbox, as for other commands.|
 
 ### Downloading the Shell
-The Ixia Chassis 2G Shell is available from the [Quali Community Integrations](https://community.quali.com/integrations) page. 
+The ByteBlower Chassis 2G Shell is available from the [Quali Community Integrations](https://community.quali.com/integrations) page. 
 
 Download the files into a temporary location on your local machine. 
 
@@ -108,11 +112,11 @@ The shell comprises:
 
 |File name|Description|
 |:---|:---|
-|Ixia.Chassis.Shell.2G.zip|Ixia Chassis Shell package|
-|Ixia.Chassis.Shell.2G.offline.requirements.zip|Shell Python dependencies (for offline deployments only)|
+|ByteBlower.Chassis.Shell.2G.zip|ByteBlower Chassis Shell package|
+|ByteBlower.Chassis.Shell.2G.ByteBlower.requirements.zip|Shell Python dependencies (for offline deployments only)|
 
 # Importing and Configuring the Shell
-This section describes how to import the Ixia Chassis 2G Shell and configure and modify the shell’s devices.
+This section describes how to import the ByteBlower Chassis 2G Shell and configure and modify the shell’s devices.
 
 ### Importing the shell into CloudShell
 
@@ -154,7 +158,7 @@ For more information, see [Configuring CloudShell to Execute Python Commands in 
 Before PyPi Server was introduced as CloudShell’s python package management mechanism, the `PythonOfflineRepositoryPath` key was used to set the default offline package repository on the Quali Server machine, and could be used on specific Execution Eerver machines to set a different folder. 
 
 **To set the offline python repository:**
-1. Download the *Ixia.Chassis.Shell.2G.offline.requirements.zip* file, see [Downloading the Shell](#downloading-the-shell).
+1. Download the *ByteBlower.Chassis.Shell.2G.offline.requirements.zip* file, see [Downloading the Shell](#downloading-the-shell).
 2. Unzip it to a local repository. Make sure the execution server has access to this folder. 
 3.  On the Quali Server machine, in the *~\CloudShell\Server\customer.config* file, add the following key to specify the path to the default python package folder (for all Execution Servers):  
 	`<add key="PythonOfflineRepositoryPath" value="repository 
@@ -174,16 +178,10 @@ You can also modify existing resources, see [Managing Resources in the Inventory
 **To create a resource for the device:**
   1. In the CloudShell Portal, in the **Inventory** dashboard, click **Add New**. 
      ![](https://github.com/stsuberi/SaraTest/blob/master/create_a_resource_device.png)
-  2. From the list, select the **Ixia Chassis 2G Shell**.
-  3. Enter the **Name** and **IP address** of the Ixia Chassis.
+  2. From the list, select the **ByteBlower Chassis 2G Shell**.
+  3. Enter the **Name** and **IP address** of the ByteBlower Chassis.
   4. Click **Create**.
-  5. In the **Resource** dialog box, enter the device's settings, as follows: 
-      * If Ixia Chassis is Windows-based and is accessible directly to the Execution Server then there is no need for additional settings.
-      * If Ixia Chassis is Linux-based, please consult with our Customer Success team.
-      * If Ixia Chassis is not directly accessible to the Execution Server, there must be an IxTclServer serving as a proxy between the Execution Server and the chassis, enter the following settings:
-          * **Controller Address**: address of the IxTclServer
-          * **Controller TCP Port**: TCP port of IxTclServer (leave empty for default 4555 port) 
-  6. Click **Continue**.
+  5. Click **Continue**.
 
 CloudShell validates the device’s settings and updates the new resource with the device’s structure (if the device has a structure).
 
