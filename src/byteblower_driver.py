@@ -4,13 +4,7 @@ ByteBlower chassis shell driver.
 import logging
 from typing import Optional
 
-from byteblower.byteblowerll.byteblower import (
-    ByteBlower,
-    ByteBlowerInterface,
-    ByteBlowerServer,
-    MeetingPoint,
-    PhysicalInterface,
-)
+from byteblowerll.byteblower import ByteBlower, ByteBlowerInterface, ByteBlowerServer, MeetingPoint, PhysicalInterface
 from cloudshell.logging.qs_logger import get_qs_logger
 from cloudshell.shell.core.driver_context import AutoLoadDetails, InitCommandContext, ResourceCommandContext
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
