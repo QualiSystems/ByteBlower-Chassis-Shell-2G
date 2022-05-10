@@ -51,7 +51,7 @@ For detailed information about the shell’s structure and attributes, see the [
 
 ### Requirements
 
-▪ CloudShell version **9.3 and up**
+▪ CloudShell version **v2021.2.0 and up**
 
 **Note:** If your CloudShell version does not support this shell, you should consider upgrading to a later version of CloudShell or contact customer support.
 

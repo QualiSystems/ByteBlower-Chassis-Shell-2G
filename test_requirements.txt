@@ -6,3 +6,5 @@ pytest
 pre-commit
 pylint
 pylint_pytest
+
+shellfoundry_traffic
