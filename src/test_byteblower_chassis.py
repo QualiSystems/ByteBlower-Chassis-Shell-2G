@@ -48,8 +48,8 @@ def autoload_context(test_helpers: TestHelpers, server: str) -> AutoLoadCommandC
 
 @pytest.fixture()
 def autoload_resource(session: CloudShellAPISession, test_helpers: TestHelpers, server: str) -> Iterable[ResourceInfo]:
-    """Yields CPE resource for shell autoload testing."""
-    resource = test_helpers.create_autoload_resource(BYTEBLOWER_CHASSIS_MODEL, "test-byteblower", server)
+    """Yields ByteBlower resource for shell autoload testing."""
+    resource = test_helpers.create_autoload_resource(BYTEBLOWER_CHASSIS_MODEL, "test-folder/test-byteblower", server)
     yield resource
     session.DeleteResource(resource.Name)
 
