@@ -9,7 +9,8 @@ metadata:
   template_author: Quali
   template_icon: shell-icon.png
   template_name: ByteBlower Chassis Shell 2G
-  template_version: 3.0.2
+  template_version: 3.1.0
+
 node_types:
   vendor.ByteBlower Chassis Shell 2G:
     derived_from: cloudshell.nodes.TrafficGeneratorChassis

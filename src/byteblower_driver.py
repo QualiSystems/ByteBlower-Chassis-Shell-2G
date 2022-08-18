@@ -4,7 +4,14 @@ ByteBlower chassis shell driver.
 import logging
 from typing import Optional
 
-from byteblowerll.byteblower import ByteBlower, ByteBlowerInterface, ByteBlowerServer, MeetingPoint, PhysicalInterface
+from byteblowerll.byteblower import (
+    ByteBlower,
+    ByteBlowerInterface,
+    ByteBlowerServer,
+    MeetingPoint,
+    PhysicalInterface,
+    WirelessEndpoint,
+)
 from cloudshell.logging.qs_logger import get_qs_logger
 from cloudshell.shell.core.driver_context import AutoLoadDetails, InitCommandContext, ResourceCommandContext
 from cloudshell.shell.core.resource_driver_interface import ResourceDriverInterface
@@ -85,7 +92,7 @@ class ByteBlowerChassis2GDriver(ResourceDriverInterface):
         gen_port = GenericTrafficGeneratorPort(interface.NameGet())
         gen_module.add_sub_resource(f"P{interface.PortIdGet()}", gen_port)
 
-    def _load_ep_bb(self, gen_module: GenericTrafficGeneratorModule, device, index: int) -> None:
+    def _load_ep_bb(self, gen_module: GenericTrafficGeneratorModule, device: WirelessEndpoint, index: int) -> None:
         """Get endpoint resource and attributes."""
         name = device.DeviceInfoGet().GivenNameGet()
         if name in [r.name for r in gen_module.resources.values()]:

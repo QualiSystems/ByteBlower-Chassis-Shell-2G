@@ -1,19 +1,12 @@
 ![](https://github.com/stsuberi/SaraTest/blob/master/cloudshell_logo.png)
 
-
-
 # ByteBlower Chassis 2G Shell
 
-Release date: May 2021
+Release date: May 2022
 
-Shell version: 3.0.2
+Shell version: 3.2.0
 
 Document version: 1.2.3
-
-# Important Note
-
-You must copy the offline requirement - `byteblower-2.14.2-cp37-cp37m-win32.whl` - from the `offline_requirements` folder to your local PyPi server.
-See [Updating Python Dependencies for Shells](#updating-python-dependencies-for-shells).
 
 # In This Guide
 
@@ -39,10 +32,10 @@ For more information on the ByteBlower Chassis, see the ByteBlower official prod
 
 To model an ByteBlower Chassis device in CloudShell, use one of the following controllers, which provide automation commands to run on the chassis, such as Load Configuration, Start Traffic/Test, Get Statistics: 
 
-▪ <a href="https://community.quali.com/repos/1259/ByteBlower-controller-shell" target="_blank">ByteBlower Controller Shell</a>
+▪ <a href="https://github.com/QualiSystems/ByteBlower-Controller-Shell-2G" target="_blank">ByteBlower Controller Shell</a>
 
 ### Standard version
-The ByteBlower Chassis 2G Shell 3.0.2 is based on the Traffic Shell standard *cloudshell_traffic_generator_chassis_standard_1_0_4.yaml*.
+The ByteBlower Chassis 2G Shell 3.1.0 is based on the Traffic Shell standard *cloudshell_traffic_generator_chassis_standard_1_0_4.yaml*.
 
 For detailed information about the shell’s structure and attributes, see the [Traffic Shell standard](https://github.com/QualiSystems/shell-traffic-standard/blob/master/spec/traffic_standard.md) in GitHub.
 
