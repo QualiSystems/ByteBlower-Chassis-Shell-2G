@@ -1,4 +1,4 @@
-exclude: src/byteblower_data_model.py
+exclude: src/byteblower_data_model.py|src/test_byteblower_chassis.py
 repos:
   - repo: https://github.com/timothycrosley/isort
     rev: 5.10.1
